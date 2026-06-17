@@ -1,0 +1,155 @@
+"use client";
+
+import { useState } from "react";
+
+const foods = ["삼겹살", "소고기", "닭고기", "생선", "새우", "만두", "명란", "기타"];
+const weights = [200, 300, 500, 700, 1000];
+
+const thawHours: Record<string, Record<number, number>> = {
+  삼겹살: { 200: 4, 300: 5, 500: 8, 700: 10, 1000: 12 },
+  소고기: { 200: 4, 300: 6, 500: 8, 700: 11, 1000: 14 },
+  닭고기: { 200: 5, 300: 7, 500: 10, 700: 13, 1000: 16 },
+  생선: { 200: 3, 300: 4, 500: 6, 700: 8, 1000: 10 },
+  새우: { 200: 2, 300: 3, 500: 4, 700: 5, 1000: 7 },
+  명란: { 200: 2, 300: 3, 500: 5, 700: 6, 1000: 8 },
+  만두: { 200: 0, 300: 0, 500: 0, 700: 0, 1000: 0 },
+  기타: { 200: 4, 300: 5, 500: 8, 700: 10, 1000: 12 },
+};
+
+export default function Home() {
+  const [food, setFood] = useState("삼겹살");
+  const [weight, setWeight] = useState(500);
+  const [mealTime, setMealTime] = useState("19:00");
+  const [result, setResult] = useState("");
+  const [thawTime, setThawTime] = useState(0);
+
+  const calculate = () => {
+    const hours = thawHours[food][weight];
+
+    if (hours === 0) {
+      setResult(`${food}은 해동 없이 바로 조리할 수 있어요.`);
+      setThawTime(0);
+      return;
+    }
+
+    const now = new Date();
+    const [hour, minute] = mealTime.split(":").map(Number);
+    const target = new Date(now);
+    target.setHours(hour, minute, 0, 0);
+
+    const thawStart = new Date(target.getTime() - hours * 60 * 60 * 1000);
+
+    const text = thawStart.toLocaleTimeString("ko-KR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    setResult(`오늘 ${text}`);
+    setThawTime(hours);
+  };
+
+  return (
+    <main className="min-h-screen bg-orange-50 px-5 py-8 text-gray-900">
+      <div className="mx-auto max-w-md">
+        <header className="mb-8 text-center">
+          <div className="mb-3 text-4xl">❄️⏰</div>
+          <h1 className="text-4xl font-bold">
+            지금<span className="text-orange-500">꺼내</span>
+          </h1>
+          <p className="mt-3 text-gray-600">
+            먹는 시간에 맞춰 꺼내야 할 시간을 알려드려요
+          </p>
+        </header>
+
+        <section className="rounded-3xl bg-white p-5 shadow-sm">
+          <h2 className="mb-3 font-bold">1. 무엇을 드시나요?</h2>
+          <div className="grid grid-cols-2 gap-3">
+            {foods.map((item) => (
+              <button
+                key={item}
+                onClick={() => setFood(item)}
+                className={`rounded-2xl border p-4 font-semibold ${
+                  food === item
+                    ? "border-orange-500 bg-orange-100 text-orange-600"
+                    : "border-gray-200 bg-white"
+                }`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <h2 className="mb-3 mt-6 font-bold">2. 얼마나 있나요?</h2>
+          <div className="grid grid-cols-3 gap-3">
+            {weights.map((w) => (
+              <button
+                key={w}
+                onClick={() => setWeight(w)}
+                className={`rounded-xl border py-3 font-semibold ${
+                  weight === w
+                    ? "border-orange-500 bg-orange-500 text-white"
+                    : "border-gray-200 bg-white"
+                }`}
+              >
+                {w === 1000 ? "1kg" : `${w}g`}
+              </button>
+            ))}
+          </div>
+
+          <h2 className="mb-3 mt-6 font-bold">3. 언제 드실 건가요?</h2>
+          <input
+            type="time"
+            value={mealTime}
+            onChange={(e) => setMealTime(e.target.value)}
+            className="w-full rounded-xl border border-gray-200 p-4 text-lg"
+          />
+
+          <button
+            onClick={calculate}
+            className="mt-6 w-full rounded-2xl bg-orange-500 py-4 text-lg font-bold text-white shadow-md"
+          >
+            언제 꺼낼까?
+          </button>
+        </section>
+
+        {result && (
+          <section className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
+            <div className="text-center">
+              <p className="text-gray-500">
+                {food} · {weight === 1000 ? "1kg" : `${weight}g`}
+              </p>
+
+              <p className="mt-4 text-sm text-gray-500">꺼내야 할 시간</p>
+
+              <h2 className="mt-2 text-5xl font-bold text-orange-500">
+                {result.replace("오늘 ", "")}
+              </h2>
+
+              <p className="mt-3 text-gray-600">
+                {thawTime === 0 ? "바로 조리 가능" : "냉장 해동 시작 권장"}
+              </p>
+            </div>
+
+            {thawTime > 0 && (
+              <div className="mt-6 rounded-2xl bg-orange-50 p-4">
+                <div className="flex justify-between">
+                  <span>예상 해동시간</span>
+                  <span className="font-bold">{thawTime}시간</span>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-4 rounded-2xl bg-gray-50 p-4">
+              <p className="mb-2 font-semibold">💡 해동 팁</p>
+              <ul className="space-y-1 text-sm text-gray-600">
+                <li>• 냉장 해동을 권장합니다.</li>
+                <li>• 실온 장시간 방치는 피하세요.</li>
+                <li>• 조리 30분 전 꺼내면 식감이 좋아집니다.</li>
+              </ul>
+            </div>
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}
