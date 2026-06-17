@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import { useState } from "react";
 
@@ -16,21 +16,50 @@ const thawHours: Record<string, Record<number, number>> = {
   기타: { 200: 4, 300: 5, 500: 8, 700: 10, 1000: 12 },
 };
 
+function getNearestWeight(weight: number) {
+  return weights.reduce((prev, curr) =>
+    Math.abs(curr - weight) < Math.abs(prev - weight) ? curr : prev
+  );
+}
+
+function getDateLabel(date: Date) {
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+
+  if (date.toDateString() === today.toDateString()) return "오늘";
+  if (date.toDateString() === tomorrow.toDateString()) return "내일";
+  return date.toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
+}
+
 export default function Home() {
   const [food, setFood] = useState("삼겹살");
   const [weight, setWeight] = useState(500);
+  const [customWeight, setCustomWeight] = useState("500");
   const [mealTime, setMealTime] = useState("19:00");
   const [result, setResult] = useState("");
   const [thawTime, setThawTime] = useState(0);
 
   const calculate = () => {
-    const hours = thawHours[food][weight];
+    const inputWeight = Number(customWeight);
 
-    if (hours === 0) {
+    if (!inputWeight || inputWeight <= 0) {
+      setResult("무게를 올바르게 입력해주세요.");
+      setThawTime(0);
+      return;
+    }
+
+    const nearestWeight = getNearestWeight(inputWeight);
+    const baseHours = thawHours[food][nearestWeight];
+
+    if (baseHours === 0) {
       setResult(`${food}은 해동 없이 바로 조리할 수 있어요.`);
       setThawTime(0);
       return;
     }
+
+    const weightRatio = inputWeight / nearestWeight;
+    const hours = Math.max(1, Math.round(baseHours * weightRatio));
 
     const now = new Date();
     const [hour, minute] = mealTime.split(":").map(Number);
@@ -39,12 +68,13 @@ export default function Home() {
 
     const thawStart = new Date(target.getTime() - hours * 60 * 60 * 1000);
 
-    const text = thawStart.toLocaleTimeString("ko-KR", {
+    const dateLabel = getDateLabel(thawStart);
+    const timeText = thawStart.toLocaleTimeString("ko-KR", {
       hour: "2-digit",
       minute: "2-digit",
     });
 
-    setResult(`오늘 ${text}`);
+    setResult(`${dateLabel} ${timeText}`);
     setThawTime(hours);
   };
 
@@ -84,7 +114,10 @@ export default function Home() {
             {weights.map((w) => (
               <button
                 key={w}
-                onClick={() => setWeight(w)}
+                onClick={() => {
+                  setWeight(w);
+                  setCustomWeight(String(w));
+                }}
                 className={`rounded-xl border py-3 font-semibold ${
                   weight === w
                     ? "border-orange-500 bg-orange-500 text-white"
@@ -95,6 +128,17 @@ export default function Home() {
               </button>
             ))}
           </div>
+
+          <input
+            type="number"
+            value={customWeight}
+            onChange={(e) => {
+              setCustomWeight(e.target.value);
+              setWeight(Number(e.target.value));
+            }}
+            placeholder="직접 입력 예: 450"
+            className="mt-3 w-full rounded-xl border border-gray-200 p-4 text-lg"
+          />
 
           <h2 className="mb-3 mt-6 font-bold">3. 언제 드실 건가요?</h2>
           <input
@@ -116,13 +160,13 @@ export default function Home() {
           <section className="mt-5 rounded-3xl border border-orange-100 bg-white p-6 shadow-sm">
             <div className="text-center">
               <p className="text-gray-500">
-                {food} · {weight === 1000 ? "1kg" : `${weight}g`}
+                {food} · {customWeight}g
               </p>
 
               <p className="mt-4 text-sm text-gray-500">꺼내야 할 시간</p>
 
               <h2 className="mt-2 text-5xl font-bold text-orange-500">
-                {result.replace("오늘 ", "")}
+                {result}
               </h2>
 
               <p className="mt-3 text-gray-600">
