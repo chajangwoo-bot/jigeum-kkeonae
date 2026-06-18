@@ -68,13 +68,23 @@ export default function Home() {
 
     const thawStart = new Date(target.getTime() - hours * 60 * 60 * 1000);
 
-    const dateLabel = getDateLabel(thawStart);
-    const timeText = thawStart.toLocaleTimeString("ko-KR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+   const diffMs = thawStart.getTime() - now.getTime();
+const diffHours = Math.round(diffMs / (1000 * 60 * 60));
 
-    setResult(`${dateLabel} ${timeText}`);
+const dateLabel = getDateLabel(thawStart);
+
+const timeText = thawStart.toLocaleTimeString("ko-KR", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+if (diffHours <= 0) {
+  setResult("지금 꺼내세요");
+} else if (diffHours <= 6) {
+  setResult(`${diffHours}시간 후 꺼내세요`);
+} else {
+  setResult(`${dateLabel} ${timeText}에 꺼내세요`);
+}
     setThawTime(hours);
   };
 

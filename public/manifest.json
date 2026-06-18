@@ -1,10 +1,21 @@
-{
+ {
   "name": "지금꺼내",
   "short_name": "지금꺼내",
   "description": "먹는 시간에 맞춰 냉동식품을 언제 꺼내야 하는지 알려주는 앱",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fff7ed",
-  "theme_color": "#f97316",
-  "icons": []
+  "theme_color": "#E48C63",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
