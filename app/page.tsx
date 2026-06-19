@@ -120,11 +120,12 @@ export default function Home() {
         <header className="mb-8 text-center">
           <div className="mb-3 text-4xl">❄️⏰</div>
           <h1 className="text-4xl font-bold">
-            지금<span className="text-orange-500">꺼내</span>
-          </h1>
-          <p className="mt-3 text-gray-600">
-            먹는 시간에 맞춰 가장 좋은 해동 타이밍을 알려드려요
-          </p>
+  지금<span className="text-orange-500">꺼내</span>
+</h1>
+
+<p className="mt-3 text-gray-600">
+  먹는 시간에 맞춰 냉동식품을 언제 꺼내야 하는지 알려드려요
+</p>
         </header>
 
         <section className="rounded-3xl bg-white p-5 shadow-sm">
@@ -216,12 +217,13 @@ export default function Home() {
                 {food} · {customWeight}g
               </p>
 
-              <p className="mt-4 text-sm text-gray-500">추천 알림</p>
+              <p className="mt-4 text-sm text-gray-500">
+  추천 해동 시작 시간
+</p>
 
-              <h2 className="mt-2 text-3xl font-bold text-orange-500">
-                {result}
-              </h2>
-
+<h2 className="mt-2 text-3xl font-bold text-orange-500">
+  {result}
+</h2>
               {isLate && (
                 <p className="mt-3 rounded-xl bg-red-50 p-3 text-sm font-semibold text-red-500">
                   이미 권장 해동 시작 시간이 지났어요. 가능하면 지금 바로 냉장 해동하세요.
@@ -248,7 +250,12 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-4 rounded-2xl bg-gray-50 p-4">
+            <button
+  className="mt-4 w-full rounded-2xl bg-orange-500 py-3 font-bold text-white"
+  onClick={() => alert("알림 기능은 곧 추가될 예정입니다.")}
+>
+  ⏰ 알림 설정하기
+</button>
               <p className="mb-2 font-semibold">💡 해동 팁</p>
               <ul className="space-y-1 text-sm text-gray-600">
                 <li>• 냉장 해동을 권장합니다.</li>
