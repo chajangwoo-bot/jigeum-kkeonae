@@ -248,20 +248,16 @@ export default function Home() {
                   {thawTime === 0 ? "없음" : `${thawTime}시간`}
                 </span>
               </div>
-            </div>
+            
 
-            <button
-  className="mt-4 w-full rounded-2xl bg-orange-500 py-3 font-bold text-white"
-  onClick={() => alert("알림 기능은 곧 추가될 예정입니다.")}
->
-  ⏰ 알림 설정하기
-</button>
+              <div className="mt-4 rounded-2xl bg-gray-50 p-4">
               <p className="mb-2 font-semibold">💡 해동 팁</p>
               <ul className="space-y-1 text-sm text-gray-600">
                 <li>• 냉장 해동을 권장합니다.</li>
                 <li>• 실온 장시간 방치는 피하세요.</li>
                 <li>• 조리 30분 전 꺼내면 식감이 좋아집니다.</li>
               </ul>
+            </div>
             </div>
           </section>
         )}
