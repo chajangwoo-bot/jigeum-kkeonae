@@ -55,6 +55,8 @@ export default function Home() {
   const [startTimeText, setStartTimeText] = useState("");
   const [mealTimeText, setMealTimeText] = useState("");
   const [isLate, setIsLate] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [notificationAllowed, setNotificationAllowed] = useState(false);
 
   const calculate = () => {
     const inputWeight = Number(customWeight);
@@ -113,7 +115,22 @@ export default function Home() {
       setIsLate(false);
     }
   };
+const requestNotification = async () => {
+  if (!("Notification" in window)) {
+    alert("이 브라우저는 알림을 지원하지 않습니다.");
+    return;
+  }
 
+  const permission = await Notification.requestPermission();
+
+  if (permission === "granted") {
+    setNotificationAllowed(true);
+
+    new Notification("지금꺼내", {
+      body: "알림 기능이 활성화되었습니다.",
+    });
+  }
+};
   return (
     <main className="min-h-screen bg-orange-50 px-5 py-8 text-gray-900">
       <div className="mx-auto max-w-md">
@@ -258,6 +275,59 @@ export default function Home() {
                 <li>• 조리 30분 전 꺼내면 식감이 좋아집니다.</li>
               </ul>
             </div>
+            <div className="mt-4 rounded-2xl bg-white p-4 border">
+  <p className="mb-3 font-semibold">
+    해동 시간이 어땠나요?
+  </p>
+
+  <div className="grid grid-cols-3 gap-2">
+    <button
+      onClick={() => setFeedback("정확")}
+      className="rounded-xl border p-2"
+    >
+      👍 정확
+    </button>
+
+    <button
+      onClick={() => setFeedback("늦음")}
+      className="rounded-xl border p-2"
+    >
+      👎 늦음
+    </button>
+
+    <button
+      onClick={() => setFeedback("빠름")}
+      className="rounded-xl border p-2"
+    >
+      ⚡ 빠름
+    </button>
+  </div>
+
+  {feedback && (
+    <p className="mt-3 text-sm text-green-600">
+      피드백 저장: {feedback}
+    </p>
+  )}
+</div>
+
+<div className="mt-4 rounded-2xl bg-blue-50 p-4">
+  <p className="font-semibold">
+    🔔 알림 기능
+  </p>
+
+  <button
+    onClick={requestNotification}
+    className="mt-3 w-full rounded-xl bg-blue-500 py-3 text-white font-bold"
+  >
+    알림 허용하기
+  </button>
+
+  {notificationAllowed && (
+    <p className="mt-2 text-sm text-blue-600">
+      알림이 활성화되었습니다.
+    </p>
+  )}
+</div>
             </div>
           </section>
         )}
